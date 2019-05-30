@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,user-scalable=0">
+		<title>Vue团购</title>
+		<link rel="stylesheet" href="css/index.css">
+	</head>
+	
+	<body>
+		<div id="app">
+			<header class="header">
+				<div class="go-back" v-on:click="goBack">&lt;</div>
+				<div class="login">登录</div>
+				<h1>Vue团购</h1>
+			</header>
+			<!-- 不是detail页面显示 -->
+			<div class="search" v-show="view != 'detail'"><input type="text" placeholder="请输入搜索关键字" v-on:keyup.enter="gotoSearch"></div>
+			<!-- 1.自定义组件 -->
+			<!-- <Home></Home>
+			<List></List>
+			<Detail></Detail> -->
+			<!-- 定义一个万能的组件元素 -->
+			<component :query="query" :is="view"></component>
+		</div>
+		<!-- 主页模板 -->
+		<template id="tpl_home">
+			<section class="home" id="home">
+				<!-- 分类按钮 -->
+				<ul class="types clearfix">
+					<li v-for="(item,index) in types">
+						<a :href="'#/list/type/'+item.id">
+							<img :src="'img/icon/'+item.url" alt="">
+							<span>{{item.title}}</span>
+						</a>
+					</li>
+				</ul>
+				<!-- 广告模块 -->
+				<ul class="ad clearfix">
+					<li v-for="(item,index) in ad">
+						<a :href="'#/detail/'+item.id">
+							<h3 :class="'color'+index">{{item.title}}</h3>
+							<p>{{item.description}}</p>
+							<img :src="'img/ad/'+item.url" alt="">
+						</a>
+					</li>
+				</ul>
+				<!-- 商品列表 -->
+				<ul class="list-container clearfix">
+					<li class="item" v-for="item in list">
+						<a :href="'#/detail/'+item.id">
+							<img :src="'img/list/'+item.img" alt="">
+							<div class="text-container">
+								<h2>{{item.title}}</h2>
+								<p>
+									<span class="price">{{item.price | priceFilter}}</span>
+									<span class="orign-price">{{item.orignPrice | orignPriceFilter}}</span>
+									<span class="sales">{{item.sales | salesFilter}}</span>
+								</p>
+							</div>
+						</a>
+					</li>
+				</ul>
+			</section>
+		</template>
+		<!-- 列表页模板 -->
+		<template id="tpl_list">
+			<section class="list" id="list">
+				<!-- 排序部分 -->
+				<!-- <ul class="order clearfix">
+					<li v-for="item in orders">
+						<span>{{item.text}}</span>
+						<span class="arrow"></span>
+					</li>
+				</ul> -->
+				<ul class="order types clearfix">
+					<li v-for="item in types" v-on:click="sortBy(item.key)">
+						<span>{{item.value}}</span>
+						<span class="arrow"></span>
+					</li>
+				</ul>
+				<!-- 商品列表 -->
+				<ul class="list-container clearfix">
+					<li class="item" v-for="item in list">
+						<a :href="'#/detail/'+item.id">
+							<img :src="'img/list/'+item.img" alt="">
+							<div class="text-container">
+								<h2>{{item.title}}</h2>
+								<p>
+									<span class="price">{{item.price | priceFilter}}</span>
+									<span class="orign-price">{{item.orignPrice | orignPriceFilter}}</span>
+									<span class="sales">{{item.sales | salesFilter}}</span>
+								</p>
+							</div>
+						</a>
+					</li>
+				</ul>
+				<div class="load-more" v-show="others.length" v-on:click="loadMore">
+					<span>查看剩余{{others.length}}家团购</span>
+					<span class="arrow"><span class="arrow white"></span></span>
+				</div>
+			</section>
+		</template>
+		<template id="tpl_detail">
+			<section class="detail" id="detail">
+				<div class="banner-part">
+					<!-- 为了避免发送错误的请求，当图片地址存在的时候，创建图片元素 -->
+					<img v-if="data.src" :src="'img/item/'+data.src" alt="">
+					<h2>{{data.title}}</h2>
+					<p>{{data.description}}</p>
+				</div>
+				<div class="price-part">
+					<span class="price"><span>{{data.price}}</span>元</span>
+					<span>{{data.orignPrice | orignPriceFilter}}</span>
+					<span class="btn">立即购买</span>
+				</div>
+				<ul class="sales-part clearfix">
+					<li>自动退款</li>
+					<li>随时退货</li>
+					<li>{{data.sales|salesFilter}}</li>
+				</ul>
+				<div class="store-part common-part">
+					<div class="part-header">店家信息</div>
+					<div class="part-body">
+						<span>{{data.storeName}}</span>
+						<span>{{data.storeAddress}}</span>
+					</div>
+					<div class="part-footer">查看{{data.storeNum}}家分店</div>
+				</div>
+				<div class="buy-part common-part">
+					<div class="part-header">购买须知</div>
+					<div class="part-body">
+						<ul>
+							<li>
+								<h3>有效期</h3>
+								<p>{{data.validateTime}}</p>
+							</li>
+							<li>
+								<h3>使用时间</h3>
+								<p>{{data.useTime}}</p>
+							</li>
+							<li>
+								<h3>使用规则</h3>
+								<ul class="clearfix">
+									<li v-for="item in data.rules">{{item}}</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</section>
+		</template>
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+	</body>
+</html>

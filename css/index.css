@@ -228,6 +228,9 @@ a{
 	position: relative;
 	color: #fff;
 }
+.detail .banner-part img{
+	width: 100%;
+}
 .detail .banner-part h2,
 .detail .banner-part p{
 	position: absolute;
